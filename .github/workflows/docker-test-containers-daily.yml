@@ -5,6 +5,9 @@ on:
     - cron: "23 3 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   copy-images:
     strategy:
@@ -20,8 +23,13 @@ jobs:
             target_image: openjdk17
     runs-on: ubuntu-latest
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        with:
+          egress-policy: audit
+
       - name: Docker login
-        uses: docker/login-action@v3
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
